@@ -1,0 +1,1 @@
+nevada-covid-scraper
