@@ -17,7 +17,8 @@ const fs = require('fs');
 
   await page.keyboard.press('Enter');
   await page.waitFor(1000);
-  await page.click('.slicerItemContainer[aria-label^="Skilled"]'); // Selects Skilled Nursing... For assisted living replace "Skilled" with "Assisted"
+  // Selects Skilled Nursing... For assisted living replace "Skilled" with "Assisted"
+  await page.click('.slicerItemContainer[aria-label^="Skilled"]');
 
 
   // Select Facility
