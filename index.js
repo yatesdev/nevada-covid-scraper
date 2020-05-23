@@ -41,14 +41,14 @@ const fs = require('fs');
     dataToReturn.push(await getData());
     fs.writeFileSync('./data.json', JSON.stringify(dataToReturn, null, 2) , 'utf-8');
   }
-
   
   async function goToNext() {
     await page.keyboard.press('ArrowDown');
     await page.waitFor(1000);
     await page.keyboard.press('Enter');
   }
-  // waits for the 14 requests... hopefully
+
+  // waits for the 14 requests... workaround solution for knowing when the dataset has been updated for the new property
   async function waitForData() {
     try {
       await Promise.all([
@@ -69,8 +69,9 @@ const fs = require('fs');
       ]);
     }
     catch(error) {
-      // we waited for hopefully the last entry in the dropdown... were done
-      // fs.writeFileSync('./data.json', JSON.stringify(dataToReturn, null, 2) , 'utf-8');
+      // If the timeout happens, then us changing the next item on the dropdown created no new requests...
+      // Using that to inference that we are at the end of the list and should quit
+      console.log(`Done... ${dataToReturn.length} facilities parsed...`);
       process.exit(0);
     }
     await page.waitFor(3000); // Just waiting a bit more for rendering to take place
