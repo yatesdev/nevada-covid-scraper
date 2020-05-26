@@ -81,10 +81,12 @@ const fs = require('fs');
   async function getData() {
     return {
       facilityName: await page.$eval('[aria-label="Facility Name Slicer"] .slicer-restatement', data => data.innerHTML),
-      confirmedCases: await page.$$eval('svg[aria-label^="Confirmed Cases"] > g > text > title', data => data.map(x => x.__data__.value)[0]),
-      recoveries: await page.$$eval('svg[aria-label^="Recoveries"] > g > text > title', data => data.map(x => x.__data__.value)[0]),
-      staffDeaths: await page.$$eval('svg[aria-label^="Staff"] > g > text > title', data => data.map(x => x.__data__.value)[2]),
+      confirmedCaseCount: await page.$$eval('[aria-label^="Confirmed COVID-19 Cases"] svg g.labelGraphicsContext > text.label', data => data.map(x => x.innerHTML)[0]),
+      residentConfirmedCaseCount: await page.$$eval('[aria-label^="Confirmed COVID-19 Cases"] svg g.labelGraphicsContext > text.label', data => data.map(x => x.innerHTML)[1]),
       residentDeaths: await page.$$eval('svg[aria-label^="Residents"] > g > text > title', data => data.map(x => x.__data__.value)[0]),
+      staffConfirmedCaseCount: await page.$$eval('[aria-label^="Confirmed COVID-19 Cases"] svg g.labelGraphicsContext > text.label', data => data.map(x => x.innerHTML)[2]),
+      staffDeaths: await page.$$eval('svg[aria-label^="Staff"] > g > text > title', data => data.map(x => x.__data__.value)[2]),
+      recoveries: await page.$$eval('svg[aria-label^="Recoveries"] > g > text > title', data => data.map(x => x.__data__.value)[0]),
     }
   }
 })()
