@@ -39,7 +39,7 @@ async function scraper(options) {
   var dataToReturn = [];
   // iterate over options
   while (true) {
-    await page.waitFor(2000);
+    await page.waitFor(1000);
     await goToNext();
     await waitForData();
     if (options.debug) { await page.screenshot({ path: 'testing.png' }); }
@@ -51,7 +51,7 @@ async function scraper(options) {
   
   async function goToNext() {
     await page.keyboard.press('ArrowDown');
-    await page.waitFor(1000);
+    await page.waitFor(500);
     await page.keyboard.press('Enter');
   }
 
@@ -81,7 +81,7 @@ async function scraper(options) {
       console.log(`Done... ${dataToReturn.length} facilities parsed...`);
       process.exit(0);
     }
-    await page.waitFor(3000); // Just waiting a bit more for rendering to take place
+    await page.waitFor(2000); // Just waiting a bit more for rendering to take place
   }
 
   async function getData() {
