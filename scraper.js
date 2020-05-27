@@ -58,22 +58,8 @@ async function scraper(options) {
   // waits for the 14 requests... workaround solution for knowing when the dataset has been updated for the new property
   async function waitForData() {
     try {
-      await Promise.all([
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'),
-        page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true')
-      ]);
+      const requests = new Array(14).fill(page.waitForResponse('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true'))
+      await Promise.all(requests);
     }
     catch(error) {
       // If the timeout happens, then us changing the next item on the dropdown created no new requests...
