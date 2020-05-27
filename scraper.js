@@ -1,24 +1,28 @@
 require('events').EventEmitter.prototype._maxListeners = 20;
 const puppeteer = require('puppeteer');
-const fs = require('fs');
+const fs = require('fs').promises;
+const { promisify } = require('util'); 
+const csv = promisify(require('csv-stringify'));
 
-(async () => {
+module.exports = scraper;
+
+async function scraper(options) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://app.powerbigov.us/view?r=eyJrIjoiNDMwMDI0YmQtNmUyYS00ZmFjLWI0MGItZDM0OTY1Y2Y0YzNhIiwidCI6ImU0YTM0MGU2LWI4OWUtNGU2OC04ZWFhLTE1NDRkMjcwMzk4MCJ9')
 
   // Select the type of facility
-  await page.waitForSelector('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
-  await page.focus('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
-  // use Power BI keyboard shortcut to gain focus of dropdowns
-  await page.keyboard.down('ControlLeft');
-  await page.keyboard.press('ArrowRight');
-  await page.keyboard.up('ControlLeft');
+  // await page.waitForSelector('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
+  // await page.focus('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
+  // // use Power BI keyboard shortcut to gain focus of dropdowns
+  // await page.keyboard.down('ControlLeft');
+  // await page.keyboard.press('ArrowRight');
+  // await page.keyboard.up('ControlLeft');
 
-  await page.keyboard.press('Enter');
-  await page.waitFor(1000);
-  // Selects Skilled Nursing... For assisted living replace "Skilled" with "Assisted"
-  await page.click('.slicerItemContainer[aria-label^="Skilled"]');
+  // await page.keyboard.press('Enter');
+  // await page.waitFor(1000);
+  // // Selects Skilled Nursing... For assisted living replace "Skilled" with "Assisted"
+  // await page.click('.slicerItemContainer[aria-label^="Assisted"]');
 
 
   // Select Facility
@@ -38,9 +42,11 @@ const fs = require('fs');
     await page.waitFor(2000);
     await goToNext();
     await waitForData();
-    await page.screenshot({ path: 'testing.png' })
-    dataToReturn.push(await getData());
-    fs.writeFileSync('./data.json', JSON.stringify(dataToReturn, null, 2) , 'utf-8');
+    if (options.debug) { await page.screenshot({ path: 'testing.png' }); }
+    const facilityData = await getData();
+    if (options.debug) { console.debug(facilityData); }
+    dataToReturn.push(facilityData);
+    await writeData({ outputFile, format } = options, dataToReturn);
   }
   
   async function goToNext() {
@@ -89,4 +95,17 @@ const fs = require('fs');
       recoveries: await page.$$eval('svg[aria-label^="Recoveries"] > g > text > title', data => data.map(x => x.__data__.value)[0]),
     }
   }
-})()
+
+  async function writeData({ outputFile, format }, data) {
+    let output;
+    switch(format) {
+      case 'csv':
+        output = await csv(data, { header: true });
+        break;
+      case 'json':
+        output = JSON.stringify(data, null, 2)
+        break;
+    }
+    await fs.writeFile(outputFile, output);
+  }
+}

@@ -1,15 +1,16 @@
 {
   "name": "nevada-covid-scraper",
   "version": "1.0.0",
-  "description": "nevada-covid-scraper",
+  "description": "Scrape and export Nevada's DHHS PowerBI dashboard for COVID-19 cases",
   "main": "index.js",
   "scripts": {
-    "start": "node .\\index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node .\\index.js"
   },
   "author": "Mike Yates <mike@yatesdev.com>",
   "license": "ISC",
   "dependencies": {
+    "commander": "^5.1.0",
+    "csv-stringify": "^5.5.0",
     "puppeteer": "^3.1.0"
   }
 }
