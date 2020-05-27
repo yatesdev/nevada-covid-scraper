@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+'use strict'
+
 const { program } = require('commander');
 const pkg = require('../package.json');
 const scraper = require('../lib/scraper.js');

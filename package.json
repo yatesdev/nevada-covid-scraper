@@ -1,6 +1,6 @@
 {
   "name": "nevada-covid-scraper",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Scrape and export Nevada's DHHS PowerBI dashboard for COVID-19 cases",
   "author": "Mike Yates <mike@yatesdev.com>",
   "repository": {
