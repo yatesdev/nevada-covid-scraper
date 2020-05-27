@@ -9,7 +9,13 @@ module.exports = scraper;
 async function scraper(options) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto('https://app.powerbigov.us/view?r=eyJrIjoiNDMwMDI0YmQtNmUyYS00ZmFjLWI0MGItZDM0OTY1Y2Y0YzNhIiwidCI6ImU0YTM0MGU2LWI4OWUtNGU2OC04ZWFhLTE1NDRkMjcwMzk4MCJ9')
+  try {
+    await page.goto('https://app.powerbigov.us/view?r=eyJrIjoiNDMwMDI0YmQtNmUyYS00ZmFjLWI0MGItZDM0OTY1Y2Y0YzNhIiwidCI6ImU0YTM0MGU2LWI4OWUtNGU2OC04ZWFhLTE1NDRkMjcwMzk4MCJ9')
+  }
+  catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 
   // Select the type of facility
   // await page.waitForSelector('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
@@ -36,22 +42,23 @@ async function scraper(options) {
   await page.keyboard.press('Enter');
   await page.waitFor(1000);
 
-  var dataToReturn = [];
+  let dataToReturn = [];
   // iterate over options
   while (true) {
-    await page.waitFor(1000);
     await goToNext();
     await waitForData();
-    if (options.debug) { await page.screenshot({ path: 'testing.png' }); }
     const facilityData = await getData();
-    if (options.debug) { console.debug(facilityData); }
+    if (options.debug) {
+      await page.screenshot({ path: 'testing.png' }); 
+      console.debug(facilityData);
+    }
     dataToReturn.push(facilityData);
-    await writeData({ outputFile, format } = options, dataToReturn);
+    await writeData(options, dataToReturn);
   }
   
   async function goToNext() {
     await page.keyboard.press('ArrowDown');
-    await page.waitFor(500);
+    await page.waitFor(250);
     await page.keyboard.press('Enter');
   }
 
