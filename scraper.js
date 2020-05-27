@@ -3,6 +3,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
 const { promisify } = require('util'); 
 const csv = promisify(require('csv-stringify'));
+const inquirer = require('inquirer');
 
 module.exports = scraper;
 
@@ -18,18 +19,17 @@ async function scraper(options) {
   }
 
   // Select the type of facility
-  // await page.waitForSelector('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
-  // await page.focus('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
-  // // use Power BI keyboard shortcut to gain focus of dropdowns
-  // await page.keyboard.down('ControlLeft');
-  // await page.keyboard.press('ArrowRight');
-  // await page.keyboard.up('ControlLeft');
-
-  // await page.keyboard.press('Enter');
-  // await page.waitFor(1000);
-  // // Selects Skilled Nursing... For assisted living replace "Skilled" with "Assisted"
-  // await page.click('.slicerItemContainer[aria-label^="Assisted"]');
-
+  const facilityTypeOptions = await buildFacilityTypeOptions();
+  const {facilityType: facilityTypeSelections} = await inquirer.prompt({
+    type: 'checkbox',
+    name: 'facilityType',
+    message: 'Select Facility Types',
+    choices() {
+      return facilityTypeOptions;
+    },
+    default: [1, 7]
+  })
+  await selectFacilityTypes();
 
   // Select Facility
   // Setup for iteration
@@ -49,7 +49,7 @@ async function scraper(options) {
     await waitForData();
     const facilityData = await getData();
     if (options.debug) {
-      await page.screenshot({ path: 'testing.png' }); 
+      await page.screenshot({ path: 'testing.png' });
       console.debug(facilityData);
     }
     dataToReturn.push(facilityData);
@@ -100,5 +100,46 @@ async function scraper(options) {
         break;
     }
     await fs.writeFile(outputFile, output);
+  }
+
+  async function buildFacilityTypeOptions() {
+    console.info('Building option list...');
+    await page.waitForSelector('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
+    await page.focus('[aria-label="Facility Type Slicer"] .slicer-dropdown-menu');
+    // use Power BI keyboard shortcut to gain focus of dropdowns
+    await page.keyboard.down('ControlLeft');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.up('ControlLeft');
+
+    await page.keyboard.press('Enter');
+    await page.waitFor(500);
+    await page.screenshot({ path: 'testing.png' });
+
+    const opts = await (await page.$('.slicer-dropdown-content')).$$eval('div.row .slicerItemContainer', data => data.map((x, index) => {
+      return {
+        name: x.innerText,
+        value: index,
+        short: x.innerText
+      };
+    }).filter(x => x.name !== 'Select all'));
+
+    return opts;
+  }
+
+  async function selectFacilityTypes() {
+    const rowElements = await (await (await page.$('.slicer-dropdown-content')).$$('div.row .slicerItemContainer .slicerText')).filter((x, index) => facilityTypeSelections.includes(index));
+    await page.keyboard.down('ControlLeft');
+    await Promise.all(
+      rowElements.map(async row => {
+        await row.click();
+        await page.waitFor(500);
+      })
+    );
+    await page.keyboard.up('ControlLeft');
+
+    if (options.debug) {
+      await page.screenshot({ path: 'testing.png' });
+      await page.waitFor(2000);
+    }
   }
 }

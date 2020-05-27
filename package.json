@@ -11,6 +11,7 @@
   "dependencies": {
     "commander": "^5.1.0",
     "csv-stringify": "^5.5.0",
+    "inquirer": "^7.1.0",
     "puppeteer": "^3.1.0"
   }
 }

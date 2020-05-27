@@ -16,7 +16,7 @@ function configure() {
     )
     .option(
       '-f, --output-format <format>',
-      'output format of the file ["json" | "csv"]',
+      'output format of the file [json | csv]',
       'json'
     )
     .option(
