@@ -1,17 +1,13 @@
-nevada-covid-scraper
+# nevada-covid-scraper
 
-###Installation
+CLI to scrape Nevada's DHHS Power BI dashboard to retrieve results as they do not provide an export of the data used to create the dashboard.
 
-Be sure to have Node 10 or higher installed on your machine
+## Installation / Usage
 
-Download this repo.
+```bash
+# View config flags and options
+npx nevada-covid-scraper -h
 
-Then run the following:
-
+# Default output in JSON to data.json
+npx nevada-covid-scraper
 ```
-npm install
-
-npm start
-```
-
-The scraped data should be present in `data.json`
