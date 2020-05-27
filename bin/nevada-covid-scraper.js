@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const { program } = require('commander');
 const pkg = require('../package.json');
-const scraper = require('../scraper.js');
+const scraper = require('../lib/scraper.js');
 
 configure();
 runProgram();

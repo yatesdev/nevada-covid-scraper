@@ -11,6 +11,10 @@
   "bin": {
     "nevada-covid-scraper": "bin/nevada-covid-scraper.js"
   },
+  "files": [
+    "lib/**",
+    "bin/**"
+  ],
   "engines": {
     "node": ">=10"
   },
